@@ -3,4 +3,5 @@
 from report_generator.report_generator import ReportGenerator
 
 if __name__ == "__main__":
-    ReportGenerator()
+    report = ReportGenerator()
+    report.parse_args()
