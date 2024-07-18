@@ -5,10 +5,10 @@ Responsability:
 - Validate data
 - Read/Write socket messages
 """
-import csv
 import re
 import socket
-from app.utils import save_data
+
+from data_service.app.utils import save_data
 
 
 def validate_data(data: str):

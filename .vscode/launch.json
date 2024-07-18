@@ -5,7 +5,7 @@
             "name": "Python: Current File",
             "type": "debugpy",
             "request": "launch",
-            "cwd": "${workspaceFolder}/src/data_service",
+            "cwd": "${workspaceFolder}/src",
             "program": "${file}",
             "purpose": [
                 "debug-in-terminal"
@@ -13,7 +13,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}/src"
             }
         },
     ]

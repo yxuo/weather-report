@@ -1,24 +1,23 @@
+"""Test data_service.py"""
 import csv
 import os
 import socket
-import sys
 import threading
 import unittest
 from time import sleep
 
-__import_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(__import_dir)
+from data_service.app.server import DataService
 
-from app.server import DataServer
 
 app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 csv_file = f"{app_folder}/data/$.test_data.csv"
+
 
 class TestDataService(unittest.TestCase):
     """Test data_service"""
 
     def setUp(self):
-        self.server = DataServer(debug=True)
+        self.server = DataService(debug=True)
         self.server_thread = threading.Thread(target=self.server.start_server)
         self.server_thread.start()
 

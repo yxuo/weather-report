@@ -2,11 +2,10 @@
 
 import argparse
 import signal
-import sys
 import threading
-from app.server import DataServer
+from data_service.app.server import DataService
 
-server = DataServer()
+server = DataService()
 
 
 def read_args():
@@ -44,5 +43,3 @@ if __name__ == "__main__":
         run_detach()
     else:
         server.start_server()
-
-    print("Finished")

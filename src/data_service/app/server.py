@@ -3,10 +3,10 @@
 import socket
 from time import sleep
 
-from app.handler import handle_client
+from data_service.app.handler import handle_client
 
 
-class DataServer:
+class DataService:
     """Data service server"""
 
     server_socket: socket.socket = None
@@ -54,5 +54,5 @@ class DataServer:
 
 
 if __name__ == "__main__":
-    server = DataServer()
+    server = DataService()
     server.start_server()
