@@ -29,8 +29,6 @@ def upsert_csv(data: str, csv_name: str):
             writer = csv.writer(write_file)
             writer.writerow(CSV_HEADER.split(','))
 
-    # shutil.copy(csv_file, temp_file)
-
     with (open(csv_file, 'r', newline='', encoding='utf8') as read_file,
           open(temp_file, 'w+', newline='', encoding='utf8') as write_file):
         reader = csv.reader(read_file)
@@ -50,17 +48,3 @@ def upsert_csv(data: str, csv_name: str):
     shutil.copy(temp_file, csv_file)
     os.remove(csv_file)
     os.rename(temp_file, csv_file)
-
-
-def insert_csv(data, csv_file):
-    """Insert line to csv (create duplicates)"""
-
-    # create csv with header
-    if not os.path.exists(csv_file):
-        with open(csv_file, 'a+', newline='', encoding='utf8') as write_file:
-            writer = csv.writer(write_file)
-            writer.writerow(CSV_HEADER)
-
-    with open(csv_file, 'a+', newline='', encoding='utf8') as file:
-        writer = csv.writer(file)
-        writer.writerow(data.split(','))
