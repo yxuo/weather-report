@@ -17,8 +17,8 @@ Este projeto fornece um sistema que contém 2 aplicações:
 Criando o ambiente virtual python:
 
 ```bash
-conda create -n weather python=3.12
-conda activate weather
+conda create -n weather_report python=3.12
+conda activate weather_report
 ```
 
 ## Aplicação 1 - Servidor socket
