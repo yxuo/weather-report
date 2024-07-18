@@ -14,8 +14,9 @@ class DataServer:
     host: str
     port: int
 
-    def __init__(self, detach=False) -> None:
+    def __init__(self, detach=False, debug=False) -> None:
         self.detach = detach
+        self.debug = debug
 
     def start_server(self):
         """Start the server"""
@@ -32,7 +33,7 @@ class DataServer:
             client_socket, addr = self.server_socket.accept()
             if not self.is_running:
                 break
-            data = handle_client(client_socket, addr)
+            data = handle_client(client_socket, addr, self.debug)
 
             if data == 'shutdown':
                 self.stop_server()

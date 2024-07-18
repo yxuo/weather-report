@@ -21,7 +21,8 @@ def validate_data(data: str):
         return True
     return False
 
-def handle_client(client_socket: socket.socket, addr):
+
+def handle_client(client_socket: socket.socket, addr: str, debug: bool):
     """Process request and send response/error"""
     buffer_size = 1024
     data = client_socket.recv(buffer_size).decode('utf-8').strip()
@@ -38,7 +39,7 @@ def handle_client(client_socket: socket.socket, addr):
         return data
 
     if validate_data(data):
-        save_data(data)
+        save_data(data, is_test=debug)
         client_socket.sendall(b"Ok")
     else:
         client_socket.sendall(b"Error: Invalid data format")
