@@ -8,7 +8,7 @@ from data_service.app.server import DataService
 server = DataService()
 
 
-def read_args():
+def parse_args():
     """Read args and return object"""
     parser = argparse.ArgumentParser(
         description="Run the data service server."
@@ -38,7 +38,7 @@ def run_detach():
 
 
 if __name__ == "__main__":
-    args = read_args()
+    args = parse_args()
     if args.detach:
         run_detach()
     else:

@@ -163,3 +163,5 @@ cython_debug/
 
 # etc
 $.*
+
+local_dev
