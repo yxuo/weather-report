@@ -2,6 +2,7 @@
 
 import argparse
 from datetime import datetime
+import os
 import re
 from typing import List
 from dateutil import parser as date_parser
@@ -14,7 +15,7 @@ server = DataService()
 class ReportGenerator:
     """Report Generator"""
 
-    verbose:bool
+    verbose: bool
     phones: List[str]
     date: str
     send_email: bool
@@ -57,13 +58,6 @@ class ReportGenerator:
         )
 
         parser.add_argument(
-            '--envia-email',
-            action='store_true',
-            help="Indica se o relatório será enviado por e-mail",
-            default=False,
-        )
-
-        parser.add_argument(
             '--bruto',
             type=str,
             help="Caminho para o conteúdo bruto do relatório (Exemplo: /tmp/bruto.txt)",
@@ -71,9 +65,16 @@ class ReportGenerator:
         )
 
         parser.add_argument(
+            '--envia-email',
+            action='store_true',
+            help="Indica se o relatório será enviado por e-mail",
+            default=False,
+        )
+
+        parser.add_argument(
             '-v', '--verbose',
             action='store_true',
-            help="(debug) Exibe traceback de erros junto com as mensagens de erro",
+            help="Exibe traceback de erros junto com as mensagens de erro (debug)",
             required=False,
         )
 
@@ -81,9 +82,14 @@ class ReportGenerator:
 
         if self.verbose is None:
             self.verbose = args.verbose
-        print(args.verbose)
 
         return args
+
+    def _store_args(self, args: argparse.Namespace):
+        self.phones: List[str] = self._parse_arg_phone(args.TELEFONE)
+        self.date: str = self._parse_arg_date(args.DATA)
+        self.send_email: bool = args.envia_email
+        self.raw_path: str = self._parse_arg_raw_path(args.bruto)
 
     def _parse_arg_date(self, date_str: str) -> datetime:
         """Validate and Parse date string into datetime object"""
@@ -117,13 +123,23 @@ class ReportGenerator:
         except ValueError as exc:
             raise argparse.ArgumentTypeError(invalid_date_msg) from exc
 
-    def _store_args(self, args: argparse.Namespace):
-        self.phones: List[str] = args.TELEFONE.split(',')
-        self.date: str = self._parse_arg_date(args.DATA)
-        self.send_email: bool = args.envia_email
-        self.raw_path: str = args.bruto
+    def _parse_arg_raw_path(self, raw_path: str):
+        if not os.path.exists(raw_path):
+            raise argparse.ArgumentTypeError(
+                "parâmetro BRUTO possui diretório inválido")
+        return raw_path
 
-        print(self.date)
+    def _parse_arg_phone(self, phones: str):
+        valid_ddd = {str(i).zfill(2) for i in range(11, 100)}
+        phones_list = phones.split(',')
+
+        for i, phone in enumerate(phones_list, 1):
+            ddd = phone[:2]
+            if not re.fullmatch(r'\d{11}', phone) or ddd not in valid_ddd:
+                raise argparse.ArgumentTypeError(
+                    f"O telefone [{i}/{len(phones_list)}] deve ter: DDD válido + Dígito '9' + 8 números")
+
+        return phones_list
 
     def _print_error(self, message):
         print(f"error: {message}")
