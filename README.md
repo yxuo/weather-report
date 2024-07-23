@@ -21,8 +21,37 @@ conda create -n weather_report python=3.12
 conda activate weather_report
 ```
 
-## Aplicação 1 - Servidor socket
+## Executar
+
+### Maildev
+
+```bash
+docker-compose up -d maildev
+```
+
+### Data_service
+
+Docker:
+
+```bash
+docker-compose up -d data_service
+```
+
+Desenvolvimento local:
+
+```bash
+cd src
+pip install -r requirements.txt
+python -m data_service -d
+```
+
+> A flag `-d` `--detach` significa que você pode usar Ctrl-C para encerrar o servidor
+> Uma opção conveniente para desenvolvimento.
+
+## Sobre
+
+### Aplicação 1 - Servidor TCP
 
 Servidor de dados via TCP, garantindo performance, baixa latência e um canal de mão dupla para comunicação.
 
-## Aplicação 2 - Gerador de relatório
+### Aplicação 2 - Gerador de relatório

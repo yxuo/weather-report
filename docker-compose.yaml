@@ -1,0 +1,18 @@
+name: weather_report
+
+services:
+  maildev:
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    ports:
+      - 1080:80   # web
+      - 1025:1025 # SMTP
+
+  data_service:
+    build:
+      context: .
+      dockerfile: data_service.Dockerfile
+    container_name: data_service
+    ports:
+      - "5784:5784"
