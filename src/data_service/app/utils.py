@@ -29,7 +29,6 @@ def upsert_csv(data: str, csv_name: str):
 
     # create csv with header
     if not os.path.exists(csv_file):
-        print("create new csv")
         with open(csv_file, 'a+', newline='', encoding='utf8') as write_file:
             writer = csv.writer(write_file)
             writer.writerow(CSV_HEADER.split(','))
@@ -41,7 +40,6 @@ def upsert_csv(data: str, csv_name: str):
 
         found = False
         for row in reader:
-            print(f"{row[1]} vs {email}")
             if row[1] == email:
                 writer.writerow(data.split(','))
                 found = True

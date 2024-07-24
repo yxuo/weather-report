@@ -4,6 +4,7 @@
 import argparse
 from datetime import datetime
 import json
+import logging
 import os
 import re
 import socket
@@ -41,7 +42,7 @@ class ReportArgs:
     # args
     phones: List[str]
     users: List[dict]
-    date: str
+    date: datetime
     send_email: bool
     raw_path: str
     json_data: dict
@@ -54,7 +55,7 @@ class ReportArgs:
         self.host = '127.0.0.1'
         self.port = 5784
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+        self.logger = logging.getLogger('ReportArgs')
 
     def parse_args(self) -> Exception | None:
         """
@@ -130,10 +131,6 @@ class ReportArgs:
             required=False,
         )
 
-        arv_test = sys.argv
-        print(arv_test)
-        # sys.exit()
-
         args = parser.parse_args()
 
         if self._verbose is None:
@@ -155,7 +152,7 @@ class ReportArgs:
     def _store_args(self, args: argparse.Namespace):
         """Save each arg into variables"""
         self.phones: List[str] = self._parse_arg_phone(args.TELEFONE)
-        self.date: str = self._parse_arg_date(args.DATA)
+        self.date = self._parse_arg_date(args.DATA)
         self.send_email: bool = args.envia_email
         self.raw_path: str = self._parse_arg_raw_path(args.bruto)
 
@@ -225,26 +222,27 @@ class ReportArgs:
         - validate phone len
         """
         # validate
-        valid_ddd = {str(i).zfill(2) for i in range(11, 100)}
         phones_list = phones.split(',')
 
         for i, phone in enumerate(phones_list, 1):
-            ddd = phone[:2]
-            if not re.fullmatch(r'\d{11}', phone) or ddd not in valid_ddd:
+            print(f"{phone} vs 11 = {re.fullmatch(r'\d{11}', phone)}")
+            if not re.fullmatch(r'\d{11}', phone):
                 raise argparse.ArgumentTypeError(
                     f"O telefone [{i}/{len(phones_list)}] " +
-                    "deve ter: DDD válido + Dígito '9' + 8 números")
+                    "deve ter: DDD + Dígito '9' + 8 números")
 
         self._get_users(phones_list)
 
         return phones_list
 
     def _get_users(self, phones: List[str]):
+        self.logger.debug(str(f'fetch user from phones{phones}'))
         self.client.connect((self.host, self.port))
         msg = json.dumps({'command': "get", 'phone': phones})
         self.client.sendall(msg.encode())
         response = self.client.recv(1024).decode()
         self.client.close()
+        self.logger.debug(str(f'fetch user response: {response}'))
         response_dict = json.loads(response)
         self.users = response_dict['data']
 

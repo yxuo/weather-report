@@ -1,4 +1,5 @@
 """report_pdf.py"""
+import logging
 import os
 from typing import Dict, List
 from datetime import datetime as dt
@@ -37,12 +38,13 @@ class ReportPdf:
     _INNER_WIDTH = _PAGE_WIDTH - _LEFT_MARGIN1 - _LEFT_MARGIN2 - _RIGHT_MARGIN
     _section: str
 
-    def __init__(self, json_data: dict, client_name: str, report_date: str):
+    def __init__(self, json_data: dict, client_name: str, report_date: dt):
         self.data = json_data
         self.client_name = client_name
         self.report_date = report_date
         self.styles = getSampleStyleSheet()
         self.custom_styles = self._create_custom_styles()
+        self.logger = logging.getLogger('ReportPdf')
 
     def _create_custom_styles(self):
         custom_styles = getSampleStyleSheet()
@@ -64,7 +66,7 @@ class ReportPdf:
             spaceAfter=14, textColor=colors.black, alignment=TA_JUSTIFY,))
         return custom_styles
 
-    def generate_pdf(self, filename):
+    def generate_pdf(self, filename: str):
         """Save pdf to file"""
         # build pdfs per section (distinct headers)
         self._sort_sections()
@@ -130,8 +132,8 @@ class ReportPdf:
         # client info
         client_info_width = self._PAGE_WIDTH - self._LEFT_MARGIN - self._RIGHT_MARGIN
         client_info_table = Table(
-            [[Paragraph("<font><b>Cliente:</b></font> Joao", self.custom_styles['ClientInfoLeft']),
-              Paragraph("<b>Data de confecção:</b> 01/01/2024",
+            [[Paragraph(f"<font><b>Cliente:</b></font> {self.client_name}", self.custom_styles['ClientInfoLeft']),
+              Paragraph(f"<b>Data de confecção:</b> {self.report_date.strftime(r"%m/%d/%Y")}",
                         self.custom_styles['ClientInfoRight'])]],
             colWidths=[client_info_width/2,  client_info_width/2]
         )
