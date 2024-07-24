@@ -1,26 +1,15 @@
 """Main script for data server"""
 
 import argparse
-import logging
 import os
+from pathlib import Path
 
 from data_service.app.data_service import DataService
 from report_generator.app.report_args import ReportArgs
 from report_generator.app.report_pdf import ReportPdf
+from report_generator.app.utils import get_logger
 
 app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-log_file = f'{app_folder}/log/report_generator.log'
-
-logging.basicConfig(
-    # Defina o nível de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-    level=logging.DEBUG,
-    # Formato da mensagem de log
-    format='%(asctime)s [%(name)s] %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file),
-        logging.StreamHandler()
-    ]
-)
 
 server = DataService()
 
@@ -42,11 +31,19 @@ class ReportGenerator:
 
     def __init__(self, verbose=None) -> None:
         self.verbose = verbose
-        self.logger = logging.getLogger('ReportGenerator')
+        self.logger = get_logger("ReportGenerator")
+        self._init_folders()
+
+    def _init_folders(self):
+        Path(f"{app_folder}/log").mkdir(parents=True, exist_ok=True)
+        if os.path.exists(f"{app_folder}/generated"):
+            Path(f"{app_folder}/generated").rmdir()
+        Path(f"{app_folder}/generated").mkdir(parents=True, exist_ok=True)
+        self.logger.info("Folders cleared")
+
 
     def parse_args(self) -> Exception | None:
         """Read, treat and store args"""
-        print('parse args')
         self.args = ReportArgs(self.verbose)
         try:
             self.args.parse_args()
@@ -60,8 +57,6 @@ class ReportGenerator:
         """
         For every client, generate pdf and send email
         """
-        print("generate pdf")
-        self.logger.debug(str(f"Users: {self.args.users}"))
         for user in self.args.users:
             pdf = ReportPdf(self.args.json_data, user['name'], self.args.date)
             pdf.generate_pdf("relatorio.pdf")

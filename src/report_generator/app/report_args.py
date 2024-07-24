@@ -8,11 +8,14 @@ import logging
 import os
 import re
 import socket
-import sys
 from typing import List, Literal
 from xml.dom import NotFoundErr
 from dateutil import parser as date_parser
 import yaml
+
+from data_service.app.utils import get_logger
+
+app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FileType = Literal["json"]
 """
@@ -55,7 +58,7 @@ class ReportArgs:
         self.host = '127.0.0.1'
         self.port = 5784
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.logger = logging.getLogger('ReportArgs')
+        self.logger = get_logger("ReportArgs")
 
     def parse_args(self) -> Exception | None:
         """
@@ -225,7 +228,6 @@ class ReportArgs:
         phones_list = phones.split(',')
 
         for i, phone in enumerate(phones_list, 1):
-            print(f"{phone} vs 11 = {re.fullmatch(r'\d{11}', phone)}")
             if not re.fullmatch(r'\d{11}', phone):
                 raise argparse.ArgumentTypeError(
                     f"O telefone [{i}/{len(phones_list)}] " +
@@ -236,13 +238,13 @@ class ReportArgs:
         return phones_list
 
     def _get_users(self, phones: List[str]):
-        self.logger.debug(str(f'fetch user from phones{phones}'))
+        # self.logger.debug(str(f'_get_users from phones{phones}'))
         self.client.connect((self.host, self.port))
         msg = json.dumps({'command': "get", 'phone': phones})
         self.client.sendall(msg.encode())
         response = self.client.recv(1024).decode()
         self.client.close()
-        self.logger.debug(str(f'fetch user response: {response}'))
+        # self.logger.debug(str(f'_get_users response: {len(response)}'))
         response_dict = json.loads(response)
         self.users = response_dict['data']
 

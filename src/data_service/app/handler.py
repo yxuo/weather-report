@@ -5,7 +5,7 @@ import logging
 import re
 import socket
 
-from data_service.app.utils import save_data, search_data
+from data_service.app.utils import get_logger, save_data, search_data
 
 
 class Handler:
@@ -23,7 +23,7 @@ class Handler:
 
     def __init__(self, test=False):
         self.test = test
-        self.logger = logging.getLogger('Handler')
+        self.logger = get_logger("Handler")
 
     def handle_post(self, data: dict):
         """

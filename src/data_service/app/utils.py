@@ -16,10 +16,12 @@ data_folder = f"{app_folder}/data"
 
 CSV_HEADER = "nome,email,telefone,idade"
 
+
 def save_data(data, test=False):
     """Save data to csv. Create fie if not exists."""
     csv_name = "data.csv" if not test else "$.test_data.csv"
     upsert_csv(data, csv_name)
+
 
 def upsert_csv(data: str, csv_name: str):
     """Upsert line with unique email"""
@@ -72,3 +74,35 @@ def search_data(phone: List[str] = None, test=False):
                 "age": _age,
             })
     return result
+
+
+def get_logger(
+        name: str,
+        level=logging.DEBUG,
+        log_to_file=True,
+        log_to_stream=True,
+        format_file=True,
+        format_stream=True
+):
+    """Get logger with all needed configs"""
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    formatter = logging.Formatter(
+        '%(asctime)s [%(name)s] %(levelname)s - %(message)s')
+
+    if log_to_file:
+        file_handler = logging.FileHandler(
+            f'{app_folder}/log/data_service.log')
+        if format_file:
+            file_handler.setFormatter(formatter)
+        file_handler.setLevel(level)
+        logger.addHandler(file_handler)
+
+    if log_to_stream:
+        stream_handler = logging.StreamHandler()
+        if format_stream:
+            stream_handler.setFormatter(formatter)
+        stream_handler.setLevel(level)
+        logger.addHandler(stream_handler)
+
+    return logger

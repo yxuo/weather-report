@@ -17,7 +17,11 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
-from unidecode import unidecode  # pylint: disable=E0401
+from unidecode import unidecode
+
+from data_service.app.utils import get_logger  # pylint: disable=E0401
+
+app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class ReportPdf:
@@ -44,7 +48,7 @@ class ReportPdf:
         self.report_date = report_date
         self.styles = getSampleStyleSheet()
         self.custom_styles = self._create_custom_styles()
-        self.logger = logging.getLogger('ReportPdf')
+        self.logger = get_logger("ReportPdf")
 
     def _create_custom_styles(self):
         custom_styles = getSampleStyleSheet()
@@ -66,7 +70,7 @@ class ReportPdf:
             spaceAfter=14, textColor=colors.black, alignment=TA_JUSTIFY,))
         return custom_styles
 
-    def generate_pdf(self, filename: str):
+    def generate_pdf(self, filename: str) -> str:
         """Save pdf to file"""
         # build pdfs per section (distinct headers)
         self._sort_sections()
@@ -132,7 +136,8 @@ class ReportPdf:
         # client info
         client_info_width = self._PAGE_WIDTH - self._LEFT_MARGIN - self._RIGHT_MARGIN
         client_info_table = Table(
-            [[Paragraph(f"<font><b>Cliente:</b></font> {self.client_name}", self.custom_styles['ClientInfoLeft']),
+            [[Paragraph(f"<font><b>Cliente:</b></font> {self.client_name}",
+                        self.custom_styles['ClientInfoLeft']),
               Paragraph(f"<b>Data de confecção:</b> {self.report_date.strftime(r"%m/%d/%Y")}",
                         self.custom_styles['ClientInfoRight'])]],
             colWidths=[client_info_width/2,  client_info_width/2]

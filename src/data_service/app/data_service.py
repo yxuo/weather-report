@@ -1,27 +1,14 @@
 """server.py"""
 
-from logging import Logger
 import logging
 import os
 import socket
 from time import sleep
 
 from data_service.app.handler import Handler
+from data_service.app.utils import get_logger
 
 app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-log_file = f'{app_folder}/log/data_service.log'
-
-logging.basicConfig(
-    # Defina o nível de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-    level=logging.DEBUG,
-    # Formato da mensagem de log
-    format='%(asctime)s [%(name)s] %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file),
-        logging.StreamHandler()
-    ]
-)
 
 
 class DataService:
@@ -40,14 +27,7 @@ class DataService:
         # modules
         self.handler = Handler(test)
 
-        self._init_logger()
-
-    def _init_logger(self):
-        self.logger = logging.getLogger('DataService')
-        file_handler = logging.FileHandler(
-            f'{app_folder}/log/data_service.log')
-        file_handler.setLevel(logging.DEBUG)
-        self.logger.addHandler(file_handler)
+        self.logger = get_logger("DataService")
 
     def start_server(self):
         """Start the server"""
