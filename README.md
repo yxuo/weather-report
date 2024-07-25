@@ -23,13 +23,13 @@ conda activate weather_report
 
 ## Executar
 
-### Maildev
+### Maildev (servidor de email)
 
 ```bash
 docker-compose up -d maildev
 ```
 
-### Data_service
+### Data_service (servidor TCP)
 
 Docker:
 
@@ -48,10 +48,19 @@ python -m data_service -d
 > A flag `-d` `--detach` significa que você pode usar Ctrl-C para encerrar o servidor
 > Uma opção conveniente para desenvolvimento.
 
-## Sobre
+### report_generator (gerador de PDF)
 
-### Aplicação 1 - Servidor TCP
+Desenvolvimento local:
 
-Servidor de dados via TCP, garantindo performance, baixa latência e um canal de mão dupla para comunicação.
+```bash
+cd src
+pip install -r requirements.txt
 
-### Aplicação 2 - Gerador de relatório
+python -m report_generator '01234567891,01234567892' "2024-02-02 10:12" --bruto 'report_generator\data\arquivo_bruto.json' --envia-email
+```
+
+Para ver todos os comandos:
+
+```bash
+python -m report_generator -h
+```
