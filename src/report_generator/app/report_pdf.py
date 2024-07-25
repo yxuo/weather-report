@@ -6,6 +6,7 @@ from typing import Dict, List
 from datetime import datetime as dt
 
 from PyPDF2 import PdfReader, PdfWriter  # pylint: disable=E0401
+from reportlab.platypus import Frame, PageBreak, KeepTogether
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -50,7 +51,6 @@ class ReportPdf:
         self.styles = getSampleStyleSheet()
         self.custom_styles = self._create_custom_styles()
         self.logger = get_logger("ReportPdf")
-
 
     def _create_custom_styles(self):
         custom_styles = getSampleStyleSheet()
@@ -209,9 +209,18 @@ class ReportPdf:
         """
         groups = self._group_reports(entries)
         for fenomeno, reports in groups.items():
-            self._add_fenomeno(elements, fenomeno, reports)
-            for report in reports:
-                self._add_report(elements, report)
+            if not reports:
+                continue
+
+            # Join fenomeno with first report, to better reading
+            _fenomeno, fenomeno_sp = self._add_fenomeno(fenomeno, reports)
+            first_report, first_report_sp = self._add_report(reports[0])
+            elements.append(KeepTogether([
+                _fenomeno, fenomeno_sp, first_report, first_report_sp]))
+
+            for report in reports[1:]:
+                report, report_sp = self._add_report(report)
+                elements += report, report_sp
 
     def _group_reports(self, entries: List[dict]) -> Dict[str, List[dict]]:
         """
@@ -239,7 +248,7 @@ class ReportPdf:
 
         return groups
 
-    def _add_fenomeno(self, elements: list, fenomeno: str, reports: List[dict]):
+    def _add_fenomeno(self, fenomeno: str, reports: List[dict]):
         """
         Add fenomeno to pdf.
 
@@ -266,10 +275,9 @@ class ReportPdf:
             ('BOTTOMPADDING', (0, 0), (-1, 0), 1.5 * mm),
         ]))
         fenomeno_table.hAlign = 'LEFT'
-        elements.append(fenomeno_table)
-        elements.append(Spacer(1, 6))
+        return fenomeno_table, Spacer(1, 6)
 
-    def _add_report(self, elements: list, report: dict):
+    def _add_report(self, report: dict):
         """
         Add report content.
 
@@ -278,8 +286,9 @@ class ReportPdf:
         """
         data = dt.fromisoformat(report['data']).strftime(r"%d/%m/%Y às %H:%M")
         mensagem: str = report['mensagem']
-        elements.append(Table([[
+        report = Table([[
             "", Paragraph(f"<b>{data}</b> {mensagem}", self.custom_styles['Description'])]],
             colWidths=[self._LEFT_MARGIN2, self._INNER_WIDTH],
-        ))
-        elements.append(Spacer(1, 6))
+        )
+        spacer = Spacer(1, 6)
+        return report, spacer

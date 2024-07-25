@@ -29,7 +29,7 @@ conda activate weather_report
 docker-compose up -d maildev
 ```
 
-### Data_service (servidor TCP)
+### data_service (servidor TCP)
 
 Docker:
 
