@@ -166,3 +166,4 @@ $.*
 
 local_dev
 log
+src/report_generator/generated

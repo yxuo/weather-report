@@ -1,1 +1,3 @@
 email_origem: "seu_email@exemplo.com"
+mail_host: "localhost"
+mail_port: 1025

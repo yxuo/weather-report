@@ -13,7 +13,7 @@ from xml.dom import NotFoundErr
 from dateutil import parser as date_parser
 import yaml
 
-from data_service.app.utils import get_logger
+from report_generator.app.utils import get_logger
 
 app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

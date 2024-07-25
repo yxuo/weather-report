@@ -1,6 +1,7 @@
 """report_pdf.py"""
 import logging
 import os
+import time
 from typing import Dict, List
 from datetime import datetime as dt
 
@@ -19,7 +20,7 @@ from reportlab.platypus import (
 )
 from unidecode import unidecode
 
-from data_service.app.utils import get_logger  # pylint: disable=E0401
+from report_generator.app.utils import get_logger  # pylint: disable=E0401
 
 app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -50,6 +51,7 @@ class ReportPdf:
         self.custom_styles = self._create_custom_styles()
         self.logger = get_logger("ReportPdf")
 
+
     def _create_custom_styles(self):
         custom_styles = getSampleStyleSheet()
         custom_styles.add(ParagraphStyle(name='Center', alignment=TA_CENTER))
@@ -70,8 +72,11 @@ class ReportPdf:
             spaceAfter=14, textColor=colors.black, alignment=TA_JUSTIFY,))
         return custom_styles
 
-    def generate_pdf(self, filename: str) -> str:
+    def generate_pdf(self, filename: str = None) -> str:
         """Save pdf to file"""
+        if not filename:
+            filename = f"{app_folder}/generated/" +\
+                f"{int(time.time())} {self.client_name}.pdf"
         # build pdfs per section (distinct headers)
         self._sort_sections()
         pdf_writer = PdfWriter()  # type: ignore
@@ -102,6 +107,9 @@ class ReportPdf:
         # delete temp
         if os.path.exists("$.temp.pdf"):
             os.remove("$.temp.pdf")
+
+        print(filename.rsplit('/')[-1])
+        return filename
 
     def _add_header(self, _canvas: canvas, doc: SimpleDocTemplate):
         """
