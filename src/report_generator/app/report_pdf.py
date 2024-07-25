@@ -20,7 +20,7 @@ from reportlab.platypus import (
 )
 from unidecode import unidecode
 
-from report_generator.app.utils import get_logger  # pylint: disable=E0401
+from report_generator.app.utils import get_logger  # pylint: disable=E0401,E0611
 
 app_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

@@ -2,12 +2,11 @@ name: weather_report
 
 services:
   maildev:
-    build:
-      context: .
-      dockerfile: maildev.Dockerfile
+    image: maildev/maildev
+    restart: always
     ports:
-      - 1080:80   # web
-      - 1025:1025 # SMTP
+      - "1080:1080"
+      - "1025:1025"
 
   data_service:
     build:
